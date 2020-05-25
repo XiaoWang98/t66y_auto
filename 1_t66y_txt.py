@@ -11,7 +11,7 @@ driver = webdriver.Firefox(options=firefox_options)     # 打开 firefox 浏览�
 for i in range(1,101): # 有一百页能访问到
     print('进度:     '+str(i)+'%')
 
-    driver.get("https://t66y.com/thread0806.php?fid=26&search=&page="+str(i))
+    driver.get("https://****.com/************&page="+str(i)) #自己打开网页去看下，复制下，这里就不放具体链接了！
     html = driver.page_source       # get html
 
     soup = BeautifulSoup(html, "html.parser")
@@ -21,7 +21,7 @@ for i in range(1,101): # 有一百页能访问到
 
     f = open('test.txt','a',encoding="utf-8")
     for j in range(0,len(data)):
-        f.write(data[j].get_text()+'￥https://t66y.com/'+str(data[j])[13:42]+'\n')# get_text是获取语句中的标题
+        f.write(data[j].get_text()+'￥https://****.com/'+str(data[j])[13:42]+'\n')# get_text是获取语句中的标题
  
     f.close()
 
