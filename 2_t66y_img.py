@@ -20,7 +20,7 @@ headers2 = {
             'Cache-Control': 'max-age=0',
             'Connection': 'keep-alive',
             'Host': 't66y.com',
-            
+            'Cookies':'__cfduid=dd6f876adad1a6c4904a7416b08699c881590488329',
             'Upgrade-Insecure-Requests': '1',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/53 7.36'
             
@@ -59,7 +59,7 @@ def validateTitle(title): # 替换windows文件名不允许的字符 该模块�
     return new_title
 
 
-if __name__ == "__main__":
+def main(min,max,bh):
 
     f = open("20200525_26.txt","r",encoding="utf-8")               
     lines = f.readlines()  
@@ -67,8 +67,8 @@ if __name__ == "__main__":
         l.append(line.split('￥'))  
 
     f.close()  
-    d = open("20200525_26_zzlink.txt","a",encoding="utf-8")   # 读取先前的txt
-    for i in range(0,len(l)):
+    d = open('20200525_26_zzlink'+bh+'.txt',"a",encoding="utf-8")   # 读取先前的txt
+    for i in range(min,max):
         # print(str(l[i][1]))
         
         soup=gethtml(str(l[i][1][0:46]))
@@ -100,3 +100,5 @@ if __name__ == "__main__":
 
         
 
+if __name__ == "__main__":
+    main(0,2500,0)
