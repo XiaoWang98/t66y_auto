@@ -2,28 +2,39 @@
 import os
 import cv2 as cv
 from bs4 import BeautifulSoup
-from selenium.webdriver.firefox.options import Options
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait 
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import re
-
-# desired_capabilities = DesiredCapabilities.FIREFOX
-# desired_capabilities["pageLoadStrategy"] = "none"  
-
-firefox_options = Options()
-firefox_options.add_argument("--headless")  # 让firefox在后台不显示界面
-driver = webdriver.Firefox(options=firefox_options)     # 打开 firefox 浏览器
-wait = WebDriverWait(driver, 15)
+import requests
+import time
 
 httpimg = re.compile(r'ess-data="(http\S*\.(png|jpg|jpeg))"')
 httptorr=re.compile(r'http://www.rmdown.com/link.php\?hash=[a-zA-Z0-9]{0,200}')
 
 l=[]
+proxies={ "http": "http://127.0.0.1:20196", "https": "http://127.0.0.1:20196", } 
+headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'}
+
+headers2 = {
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
+            'Cache-Control': 'max-age=0',
+            'Connection': 'keep-alive',
+            'Host': 't66y.com',
+            
+            'Upgrade-Insecure-Requests': '1',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/53 7.36'
+            
+        }
 
 
+def gethtml(url):
+# url='https://t66y.com/htm_data/2005/26/3942503.html'
 
-
+    headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'}
+    response = requests.get(url,headers=headers,proxies=proxies)
+    soup=BeautifulSoup(response.text,'lxml')
+    print(response)
+    return soup
 
 
 def product_imgandlink(soup): # 获取目标链接
@@ -36,7 +47,8 @@ def product_imgandlink(soup): # 获取目标链接
 
 def img_download(url,name): # 下载图片模块
     import requests
-    r = requests.get(url)
+    proxies={ "http": "http://127.0.0.1:20196", "https": "http://127.0.0.1:20196", } 
+    r = requests.get(url,headers=headers2,proxies=proxies)
     with open('./t66y_26/'+name+'.jpg', 'wb') as f:
         f.write(r.content)  
 
@@ -57,15 +69,16 @@ if __name__ == "__main__":
     f.close()  
     d = open("20200525_26_zzlink.txt","a",encoding="utf-8")   # 读取先前的txt
     for i in range(0,len(l)):
-
-        driver.get(str(l[i][1]))
-        html = driver.page_source       # get html
-        soup = BeautifulSoup(html, "html.parser")
+        # print(str(l[i][1]))
+        
+        soup=gethtml(str(l[i][1][0:46]))
+        # time.sleep(10)
+        # print(soup)
 
         try:
             dlink,imgs_link=product_imgandlink(soup)
         except:
-            print(str(i)+'product_imgandlink失败')
+            print(str(i)+' product_imgandlink失败')
         name=str(l[i][0])
         name=validateTitle(name)
         for j in range(0,len(imgs_link)):
@@ -76,22 +89,14 @@ if __name__ == "__main__":
             try:
                 img_download(str(imgs_link[j][0]),name+str(j)) # 下载图片
             except:
-                print(str(i)+'img_download失败')
+                print(str(i)+' img_download失败')
         try:
 
             d.write(name+'￥'+str(dlink[0])+'\n') # 将name和种子链接写入txt
             print(i)
         except:
-            print(str(i)+'d.write失败')
+            print(str(i)+' d.write失败')
     d.close()
-        # driver.close()
+
         
 
-    
-
-
-
-
-
-
-driver.quit()
